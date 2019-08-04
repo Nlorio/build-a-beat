@@ -54,13 +54,13 @@ export class microphone extends React.Component {
   playbackRecording = () => {
     console.log(this.playable);
 
-    this._audio.play();
-    return;
+    // this._audio.play();
+    // return;
 
     // if (this.playable) {
     if (true) {
       this.setState({ play: !this.state.play }, () => {
-        this.state.play ? window.audio.play() : window.audio.pause();
+        this.state.play ? this._audio.play() : this._audio.pause();
       });
     }
   };
@@ -72,7 +72,7 @@ export class microphone extends React.Component {
   onStop = (recordedBlob) => {
     this._audio.src = recordedBlob.blobURL;
     this._audio.load();
-    this._audio.play();
+    // this._audio.play();
   };
 
   render() {
@@ -95,13 +95,6 @@ export class microphone extends React.Component {
           <button onClick={this.startRecording} type="button">Start</button>
           <button onClick={this.stopRecording} type="button">Stop</button>
           <button onClick={this.playbackRecording} type="button">{this.state.play ? 'Pause' : 'Play'}</button>
-
-          {/*<audio controls>*/}
-          {/*  <source src={window.audio} />*/}
-          {/*  /!*<source src="myAudio.ogg" type="audio/ogg">*!/*/}
-          {/*  /!*    <p>Your browser doesn't support HTML5 audio. Here is*!/*/}
-          {/*  /!*      a <a href="myAudio.mp4">link to the audio</a> instead.</p>*!/*/}
-          {/*</audio>*/}
 
           </div>
         </div>
