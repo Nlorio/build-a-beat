@@ -5,9 +5,10 @@ import { ReactMic } from 'react-mic';
 import logo from './logo.svg';
 import './App.scss';
 import p5 from 'p5';
-import 'p5/lib/addons/p5.sound';
 import 'p5/lib/addons/p5.dom';
+import 'p5/lib/addons/p5.sound';
 // var p5 = require("p5");
+import ffmpeg from 'ffmpeg';
 
 
 // function App() {
@@ -26,28 +27,48 @@ class App extends React.Component {
 }
 
 
-function chunk_analyzer(chunk) {
-  var sound, amplitude, cnv;
 
-  p5.setup = function () {
-    cnv = p5.createCanvas(600, 400);
-    amplitude = new p5.Amplitude();
-    amplitude.setInput(window.wholeAudio);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function chunk_analyzer(p, chunk) {
+  var amplitude, cnv;
+  console.log("func called");
+  p.setup = function () {
+    console.log("setup");
+    // cnv = p5.createCanvas(600, 400);
+    amplitude = new p.Amplitude();
+    console.log(chunk);
+    // amplitude.setInput();
+    amplitude.setInput(chunk);
+    // return amplitude.getLevel();
+  };
+  p.draw = function () {
+    var amp_level = amplitude.getLevel();
+    return amp_level;
+    // console.log(amp_level);
   };
 
+  p.setup();
+  p.draw();
 
-  // var amplitude = new p5.Amplitude();
-
-  // Use whole audio for testing purposes right now
-  // amplitude.setInput(window.wholeAudio);
-  // amplitude.setInput(chunk);
-
-  var amp_level = amplitude.getLevel();
-  console.log(amp_level);
-
-
-  // return (
-  // )
 }
 
 
@@ -78,10 +99,7 @@ class Microphone extends React.Component {
 
   playbackRecording = () => {
     console.log(this.state.playable);
-    // this._audio.play();
-    // return;
 
-    // if (this.playable) {
     if (this.state.playable) {
       this.setState({ play: !this.state.play }, () => {
         this.state.play ? this._audio.play() : this._audio.pause();
@@ -94,19 +112,38 @@ class Microphone extends React.Component {
   onData = (recordedBlob) => {
     console.log('chunk of real-time data is: ', recordedBlob);
 
+    // Convert chunk blob to mp3 before sending to chunk analyzer
+    // const process = new ffmpeg(recordedBlob.blobURL);
+    // console.log(recordedBlob.blobURL);
+    // console.log(process);
+
+    // var test = chunk_analyzer(p5, recordedBlob);
+    // console.log(test);
+
+
 
     // Generate and save chunk of recorded audio to a global variable
     // var chunk_audio = recordedBlob.src;
-    chunk_analyzer();
+    // var test = chunk_analyzer();
+    // console.log(test);
   };
 
   onStop = (recordedBlob) => {
     this._audio.src = recordedBlob.blobURL;
     this._audio.load();
+    console.log(this._audio);
+
+
+    console.log(this._audio.src);
+    var ffmpeg = require('ffmpeg');
+    const process = new ffmpeg(this._audio.src);
+
 
     // Save whole audio file to a global variable
     window.wholeAudio = this._audio;
 
+    // var test = chunk_analyzer(p5, this._audio.src);
+    // console.log(test);
     // this._audio.play();
   };
   render() {
