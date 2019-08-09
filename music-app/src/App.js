@@ -29,42 +29,45 @@ class App extends React.Component {
 }
 
 // P5 Analyze Stream of Audio
-class Sketch extends React.PureComponent {
+class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
-  render () {
-    new p5(this.sketch, this.root);
+  constructor(props) {
+    // run regular ass javascript inside the constructor
+    super(props); // Sets up the class for me
+
+    // var p5 = require("p5");
     this.sketch = p => {
-     let mic, fft, canvas;
+      let mic, fft, canvas;
 
       p.setup = function () {
         canvas = p.createCanvas(710, 400);
-        p5.noFill();
+        p.noFill();
 
         mic = new p5.AudioIn();
         mic.start();
+        console.log("I am recording you");
         fft = new p5.FFT();
         fft.setInput(mic);
       };
 
       p.draw = function () {
         p.background(200);
-
+        console.log("I wanna draw");
         let spectrum = fft.analyze();
         p.beginShape();
         for (let i = 0; i < spectrum.length; i++) {
-        p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
+          p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
         p.endShape();
       };
 
-      // var myp5 = new p5(this.sketch(p5));
-
-      // p.setup();
-      // p.draw();
-
+    };
+    let myp5 = new p5(this.sketch);
 
   };
-    // return this.sketch(p5);
+
+  render () {
+
     return (
         // console.log(this.sketch(p5)),
         <div className="App">
@@ -73,8 +76,7 @@ class Sketch extends React.PureComponent {
             <p>
               Build A Beat.
             </p>
-            {this.sketch(p5)}
-
+            {/*<button onClick={this.myp5} type="button">Start</button>*/}
           </div>
         </div>
     );
