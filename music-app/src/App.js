@@ -8,47 +8,161 @@ import p5 from 'p5';
 import 'p5/lib/addons/p5.dom';
 import 'p5/lib/addons/p5.sound';
 // var p5 = require("p5");
-import ffmpeg from 'ffmpeg';
 
 
 // function App() {
 //   return (
-
 //   );
 // }
 
 class App extends React.Component {
   render() {
     return (
-        <Microphone />
+    //     p5_microphone()
+        // eslint-disable-next-line react/jsx-pascal-case
+        // <Microphone />
+        <Sketch />
+        // {/*<p5 Analyze={Analyze}><p5/>*/}
 
     );
   }
 }
 
+// P5 Analyze Stream of Audio
+class Sketch extends React.PureComponent {
+  // new p5(this.sketch, this.root);
+  render () {
+    new p5(this.sketch, this.root);
+    this.sketch = p => {
+     let mic, fft, canvas;
+
+      p.setup = function () {
+        canvas = p.createCanvas(710, 400);
+        p5.noFill();
+
+        mic = new p5.AudioIn();
+        mic.start();
+        fft = new p5.FFT();
+        fft.setInput(mic);
+      };
+
+      p.draw = function () {
+        p.background(200);
+
+        let spectrum = fft.analyze();
+        p.beginShape();
+        for (let i = 0; i < spectrum.length; i++) {
+        p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
+        }
+        p.endShape();
+      };
+
+      // var myp5 = new p5(this.sketch(p5));
+
+      // p.setup();
+      // p.draw();
 
 
+  };
+    // return this.sketch(p5);
+    return (
+        // console.log(this.sketch(p5)),
+        <div className="App">
+          <div className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <p>
+              Build A Beat.
+            </p>
+            {this.sketch(p5)}
 
+          </div>
+        </div>
+    );
 
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// class p5_microphone  extends React.Component {
+//   render() {
+//     let mic, recorder, soundFile, canv;
+//
+//     let state = 0; // mousePress will increment from Record, to Stop, to Play
+//
+//     p5.setup = function () {
+//       canv = p5.createCanvas(400, 400);
+//       p5.background(200);
+//       p5.fill(0);
+//       p5.text('Enable mic and click the mouse to begin recording', 20, 20);
+//
+//
+//       // create an audio in
+//       mic = new p5.AudioIn();
+//
+//       // users must manually enable their browser microphone for recording to work properly!
+//       mic.start();
+//
+//       // create a sound recorder
+//       recorder = new p5.SoundRecorder();
+//
+//       // connect the mic to the recorder
+//       recorder.setInput(mic);
+//
+//       // create an empty sound file that we will use to playback the recording
+//       soundFile = new p5.SoundFile();
+//
+//     };
+//
+//     p5.mousePressed = function () {
+//       // use the '.enabled' boolean to make sure user enabled the mic (otherwise we'd record silence)
+//       if (state === 0 && mic.enabled) {
+//         // Tell recorder to record to a p5.SoundFile which we will use for playback
+//         recorder.record(soundFile);
+//
+//         p5.background(255, 0, 0);
+//         p5.text('Recording now! Click to stop.', 20, 20);
+//         state++;
+//       } else if (state === 1) {
+//         recorder.stop(); // stop recorder, and send the result to soundFile
+//
+//         p5.background(0, 255, 0);
+//         p5.text('Recording stopped. Click to play & save', 20, 20);
+//         state++;
+//       } else if (state === 2) {
+//         soundFile.play(); // play the result!
+//         p5.saveSound(soundFile, 'mySound.wav'); // save file
+//         state++;
+//       }
+//     };
+//
+//
+//     return (
+//         <div className="App">
+//           <div className="App-header">
+//             <img src={logo} className="App-logo" alt="logo" />
+//             <p>
+//             Build A Beat.
+//             </p>
+//
+//
+//             {/*<audio ref={el => this._audio = el} />*/}
+//
+//           </div>
+//         </div>
+//     );
+//
+//   }
+// }
 
 
 function chunk_analyzer(p, chunk) {
+  // Pass in chunk as src of waveform audio
+  // Convert to mp3
+  // var ffmpeg = require('ffmpeg');
+  // const process = new ffmpeg(chunk);
+  // process.then(function (audio) {
+  //   audio.fnExtractSoundToMP3()
+  // });
+
   var amplitude, cnv;
   console.log("func called");
   p.setup = function () {
@@ -68,7 +182,6 @@ function chunk_analyzer(p, chunk) {
 
   p.setup();
   p.draw();
-
 }
 
 
@@ -133,10 +246,23 @@ class Microphone extends React.Component {
     this._audio.load();
     console.log(this._audio);
 
+    // p5.saveSound(this._audio, 'recorded_audio.wav'); // save file
 
-    console.log(this._audio.src);
-    var ffmpeg = require('ffmpeg');
-    const process = new ffmpeg(this._audio.src);
+
+
+
+    // console.log(this._audio.src);
+    // var ffmpeg = require('ffmpeg');
+    // const process = new ffmpeg('recorded_audio.wav');
+    // ffmpeg(this._audio);
+    // const process = ffmpeg(this._audio.src);
+    // process.then(function (audio) {
+    //   audio.fnExtractSoundToMP3(window.test)
+
+    // });
+
+
+
 
 
     // Save whole audio file to a global variable

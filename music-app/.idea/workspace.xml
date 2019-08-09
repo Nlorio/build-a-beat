@@ -21,10 +21,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/App.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="118" column="3" selection-start-line="118" selection-start-column="3" selection-end-line="118" selection-end-column="3" />
+            <state relative-caret-position="644">
+              <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
               <folding>
                 <element signature="e#149#179#0" expanded="true" />
+                <element signature="e#1441#1490#0" />
+                <element signature="e#3671#4342#0" />
+                <element signature="e#4452#7156#0" />
               </folding>
             </state>
           </provider>
@@ -56,7 +59,7 @@
   <component name="ProjectFrameBounds" extendedState="5">
     <option name="x" value="67" />
     <option name="y" value="25" />
-    <option name="width" value="926" />
+    <option name="width" value="927" />
     <option name="height" value="1055" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -65,7 +68,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -82,12 +84,13 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../cs160/project2/project2_starter_code" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../final_project_js" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -119,18 +122,19 @@
       <updated>1564871158626</updated>
       <workItem from="1564871159811" duration="23111000" />
       <workItem from="1565153802393" duration="14805000" />
-      <workItem from="1565288439937" duration="3153000" />
+      <workItem from="1565288439937" duration="7244000" />
+      <workItem from="1565367532371" duration="4385000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41069000" />
+    <option name="totallyTimeSpent" value="49545000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="926" height="1055" extended-state="5" />
+    <frame x="67" y="25" width="927" height="1055" extended-state="5" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25027686" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2090708" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -163,10 +167,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/App.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="118" column="3" selection-start-line="118" selection-start-column="3" selection-end-line="118" selection-end-column="3" />
+        <state relative-caret-position="644">
+          <caret line="58" lean-forward="true" selection-start-line="58" selection-end-line="58" />
           <folding>
             <element signature="e#149#179#0" expanded="true" />
+            <element signature="e#1441#1490#0" />
+            <element signature="e#3671#4342#0" />
+            <element signature="e#4452#7156#0" />
           </folding>
         </state>
       </provider>
