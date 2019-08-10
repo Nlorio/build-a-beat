@@ -1,7 +1,7 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
 import { ReactMic } from 'react-mic';
-// import MIDISounds from 'midi-sounds-react';
+import MIDISounds from 'midi-sounds-react';
 import logo from './Build-A-Beat.svg';
 import './App.scss';
 import p5 from 'p5';
@@ -18,11 +18,7 @@ import 'p5/lib/addons/p5.sound';
 class App extends React.Component {
   render() {
     return (
-    //     p5_microphone()
-        // eslint-disable-next-line react/jsx-pascal-case
-        // <Microphone />
         <Sketch />
-        // {/*<p5 Analyze={Analyze}><p5/>*/}
 
     );
   }
@@ -37,29 +33,68 @@ class Sketch extends React.Component {
 
     // var p5 = require("p5");
     this.sketch = p => {
-      let mic, fft, canvas;
+      let mic, fft, canvas_freq, analyzer, noise;
+
+
+      p.preload = function () { // For audio analysis
+        // noise =
+        // Load in noise, loop noise and analyze the beats one by one to determine threshold
+      };
 
       p.setup = function () {
-        canvas = p.createCanvas(710, 200);
+        canvas_freq = p.createCanvas(710, 200);
         p.noFill();
 
-        canvas.parent('sketch_holder');
+        canvas_freq.parent('freq_holder');
         mic = new p5.AudioIn();
         mic.start();
-        console.log("I am recording you");
+        // console.log("I am recording you");
         fft = new p5.FFT();
         fft.setInput(mic);
+
+        analyzer = new p5.Amplitude();
+        analyzer.setInput(mic);
+
       };
 
       p.draw = function () {
         p.background(40,44,52);
-        console.log("I wanna draw");
+        // console.log("I wanna draw");
+
+        // Analyze and display spectrum of frequency
         let spectrum = fft.analyze();
+        console.log(spectrum);
         p.beginShape();
         for (let i = 0; i < spectrum.length; i++) {
           p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
         p.endShape();
+
+        let bass = false;
+        let snare = false;
+        let hi_hat_o = false;
+        let hi_hat_c = false;
+
+        // Analyze and interpret amplitude
+        let rms = analyzer.getLevel();
+        console.log(rms);
+
+
+
+        // Thresholds & Beats based off of input
+        // FREQ If certain element of frequency spectrum is greater than some threshold
+        // AMP If amplitude level is greater than some threshold
+        // MIDI If note returned for frequency value is equal to some value?
+
+        let threshold = 0.1;
+        if (rms > threshold) {
+          // midi
+        }
+
+
+
+
+
       };
 
     };
@@ -77,9 +112,7 @@ class Sketch extends React.Component {
             <p>
               Build A Beat.
             </p>
-            <div id="sketch_holder">
-
-            </div>
+            <div id="freq_holder"> </div>
             {/*<button onClick={this.myp5} type="button">Start</button>*/}
           </div>
         </div>
