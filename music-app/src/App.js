@@ -2,7 +2,7 @@ import React from 'react';
 // import ReactDOM from 'react-dom';
 import { ReactMic } from 'react-mic';
 // import MIDISounds from 'midi-sounds-react';
-import logo from './logo.svg';
+import logo from './Build-A-Beat.svg';
 import './App.scss';
 import p5 from 'p5';
 import 'p5/lib/addons/p5.dom';
@@ -40,9 +40,10 @@ class Sketch extends React.Component {
       let mic, fft, canvas;
 
       p.setup = function () {
-        canvas = p.createCanvas(710, 400);
+        canvas = p.createCanvas(710, 200);
         p.noFill();
 
+        canvas.parent('sketch_holder');
         mic = new p5.AudioIn();
         mic.start();
         console.log("I am recording you");
@@ -51,7 +52,7 @@ class Sketch extends React.Component {
       };
 
       p.draw = function () {
-        p.background(200);
+        p.background(40,44,52);
         console.log("I wanna draw");
         let spectrum = fft.analyze();
         p.beginShape();
@@ -76,6 +77,9 @@ class Sketch extends React.Component {
             <p>
               Build A Beat.
             </p>
+            <div id="sketch_holder">
+
+            </div>
             {/*<button onClick={this.myp5} type="button">Start</button>*/}
           </div>
         </div>
