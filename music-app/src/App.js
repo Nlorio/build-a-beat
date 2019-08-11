@@ -40,12 +40,15 @@ class Sketch extends React.Component {
 
     // Note for later: Create an array of noises to be played. If a "beat" is recognized
     // then save that note to an array, if no "beat" is recognized then save that unrecognized
-    // noise to the array
+    // noise to the array.
+    // Use p5 score to playback the series of sounds
 
     // var p5 = require("p5");
     this.sketch = p => {
       let mic, fft, canvas_freq, analyzer, noise;
       let bass_sound, snare_sound, open_hh_sound, closed_hh_sound;
+
+      let playback_beat = [];
 
       // Functions to be used for noise analysis
       p.preload = function () { // For audio analysis
@@ -60,32 +63,32 @@ class Sketch extends React.Component {
         noise = p.loadSound(u_snare);
       };
 
-      p.setup = function () {
-        // noise.loop();
-        noise.play();
-        fft = new p5.FFT();
-        fft.setInput(noise);
-
-        analyzer = new p5.Amplitude();
-        analyzer.setInput(noise);
-
-      };
-
       // p.setup = function () {
-      //   canvas_freq = p.createCanvas(710, 200);
-      //   p.noFill();
-      //
-      //   canvas_freq.parent('freq_holder');
-      //   mic = new p5.AudioIn();
-      //   mic.start();
-      //   // console.log("I am recording you");
+      //   // noise.loop();
+      //   noise.play();
       //   fft = new p5.FFT();
-      //   fft.setInput(mic);
+      //   fft.setInput(noise);
       //
       //   analyzer = new p5.Amplitude();
-      //   analyzer.setInput(mic);
+      //   analyzer.setInput(noise);
       //
       // };
+
+      p.setup = function () {
+        canvas_freq = p.createCanvas(710, 200);
+        p.noFill();
+
+        canvas_freq.parent('freq_holder');
+        mic = new p5.AudioIn();
+        mic.start();
+        // console.log("I am recording you");
+        fft = new p5.FFT();
+        fft.setInput(mic);
+
+        analyzer = new p5.Amplitude();
+        analyzer.setInput(mic);
+
+      };
 
       p.draw = function () {
         p.background(40,44,52);
@@ -100,15 +103,25 @@ class Sketch extends React.Component {
         }
         p.endShape();
 
+        console.log("Centroid of Freq: " + fft.getCentroid());
+
+        console.log("Bass Energy of Freq: " + fft.getEnergy("bass"));
+        console.log("lowMid Energy of Freq: " + fft.getEnergy("lowMid"));
+        console.log("mid Energy of Freq: " + fft.getEnergy("mid"));
+        console.log("midHigh Energy of Freq: " + fft.getEnergy("highMid"));
+        console.log("treble Energy of Freq: " + fft.getEnergy("treble"));
+
+        console.log("Lin Averages of Freq: " + fft.linAverages(4));
+        // console.log("Log Averages of Freq: " + fft.logAverages(4));
+
+        // Analyze and interpret amplitude
+        let rms = analyzer.getLevel();
+        console.log("Amplitude: " + rms);
+
         let bass = false;
         let snare = false;
         let hi_hat_o = false;
         let hi_hat_c = false;
-
-        // Analyze and interpret amplitude
-        let rms = analyzer.getLevel();
-        console.log(rms);
-
 
 
         // Thresholds & Beats based off of input
@@ -122,6 +135,44 @@ class Sketch extends React.Component {
         }
 
 
+        if (bass) {
+          // Play sound if user input is recognized to be a beat
+          bass_sound.play();
+
+          // Add sound to score
+          playback_beat.push(bass_sound);
+          bass = false;
+
+        }
+
+        if (snare) {
+          // Play sound if user input is recognized to be a beat
+          snare_sound.play();
+
+          // Add sound to score
+          playback_beat.push(snare_sound);
+          snare = false;
+
+        }
+
+        if (hi_hat_o) {
+          // Play sound if user input is recognized to be a beat
+          open_hh_sound.play();
+
+          // Add sound to score
+          playback_beat.push(open_hh_sound);
+          hi_hat_o = false;
+        }
+
+
+        if (hi_hat_c) {
+          // Play sound if user input is recognized to be a beat
+          closed_hh_sound.play();
+
+          // Add sound to score
+          playback_beat.push(closed_hh_sound);
+          hi_hat_c = false;
+        }
 
 
 
@@ -140,10 +191,16 @@ class Sketch extends React.Component {
           <div className="App-header">
             <img src={logo} className="App-logo" alt="logo" />
             <p>
-              Build A Beat.
+              Build-A-Beat
             </p>
             <div id="freq_holder"> </div>
-            {/*<button onClick={this.myp5} type="button">Start</button>*/}
+            {/*// onClick={}*/}
+            <div id="button_holder">
+              <button className="buttons" type="button">Start</button>
+              <button className="buttons" type="button">Build My Beat</button>
+              {/*<button className="buttons" type="button">One to One Beat Maker Mode</button>*/}
+            </div>
+
           </div>
         </div>
     );

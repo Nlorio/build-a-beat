@@ -36,6 +36,34 @@ $color: #282c34;
 }
 
 
+#button_holder {
+  display: flex;
+  //justify-content: space-between;
+}
+
+
+.buttons {
+  background-color: $color;
+  min-width: 25vh;
+  min-height: 6vh;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  color: white;
+
+
+  //background-color: #4CAF50; /* Green */
+  //
+  //border: none;
+  //color: white;
+  //padding: 15px 32px;
+  //text-align: center;
+  //text-decoration: none;
+  //display: inline-block;
+  //font-size: 16px;
+}
+
 //.body {
 //  margin: 0;
 //  display: flex;
