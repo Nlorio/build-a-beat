@@ -38,12 +38,12 @@ $color: #282c34;
 
 #button_holder {
   display: flex;
-  //justify-content: space-between;
+  justify-content: space-between;
 }
 
 
 .buttons {
-  background-color: $color;
+  background-color: #191d25;
   min-width: 25vh;
   min-height: 6vh;
   display: flex;
@@ -51,6 +51,7 @@ $color: #282c34;
   align-items: stretch;
   justify-content: center;
   color: white;
+  border: none;
 
 
   //background-color: #4CAF50; /* Green */
