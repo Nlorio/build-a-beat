@@ -7,13 +7,19 @@ import './App.scss';
 import p5 from 'p5';
 import 'p5/lib/addons/p5.dom';
 import 'p5/lib/addons/p5.sound';
-// var p5 = require("p5");
 
 
-// function App() {
-//   return (
-//   );
-// }
+// Import user_input for analysis / bin creation
+import u_bass from './user_input/u_bass.mp3';
+import u_snare from './user_input/u_snare.mp3';
+import u_open_hh from './user_input/u_open_hh.mp3';
+import u_closed_hh from './user_input/u_closed_hh.mp3';
+
+// Import real_drum sounds
+import bass from './real_drum/bass.mp3';
+import snare from './real_drum/snare.mp3';
+import open_hh from './real_drum/open_hh.mp3';
+import closed_hh from './real_drum/closed_hh.mp3';
 
 class App extends React.Component {
   render() {
@@ -31,31 +37,55 @@ class Sketch extends React.Component {
     // run regular ass javascript inside the constructor
     super(props); // Sets up the class for me
 
+
+    // Note for later: Create an array of noises to be played. If a "beat" is recognized
+    // then save that note to an array, if no "beat" is recognized then save that unrecognized
+    // noise to the array
+
     // var p5 = require("p5");
     this.sketch = p => {
       let mic, fft, canvas_freq, analyzer, noise;
+      let bass_sound, snare_sound, open_hh_sound, closed_hh_sound;
 
-
+      // Functions to be used for noise analysis
       p.preload = function () { // For audio analysis
-        // noise =
+        p.soundFormats('mp3', 'ogg');
+        // noise = p.loadSound('beat_box_beats/bass.mp3');
+        bass_sound = p.loadSound(bass);
+        snare_sound = p.loadSound(snare);
+        open_hh_sound = p.loadSound(open_hh);
+        closed_hh_sound = p.loadSound(closed_hh);
+
         // Load in noise, loop noise and analyze the beats one by one to determine threshold
+        noise = p.loadSound(u_snare);
       };
 
       p.setup = function () {
-        canvas_freq = p.createCanvas(710, 200);
-        p.noFill();
-
-        canvas_freq.parent('freq_holder');
-        mic = new p5.AudioIn();
-        mic.start();
-        // console.log("I am recording you");
+        // noise.loop();
+        noise.play();
         fft = new p5.FFT();
-        fft.setInput(mic);
+        fft.setInput(noise);
 
         analyzer = new p5.Amplitude();
-        analyzer.setInput(mic);
+        analyzer.setInput(noise);
 
       };
+
+      // p.setup = function () {
+      //   canvas_freq = p.createCanvas(710, 200);
+      //   p.noFill();
+      //
+      //   canvas_freq.parent('freq_holder');
+      //   mic = new p5.AudioIn();
+      //   mic.start();
+      //   // console.log("I am recording you");
+      //   fft = new p5.FFT();
+      //   fft.setInput(mic);
+      //
+      //   analyzer = new p5.Amplitude();
+      //   analyzer.setInput(mic);
+      //
+      // };
 
       p.draw = function () {
         p.background(40,44,52);
