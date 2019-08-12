@@ -60,7 +60,7 @@ class Sketch extends React.Component {
         closed_hh_sound = p.loadSound(closed_hh);
 
         // Load in noise, loop noise and analyze the beats one by one to determine threshold
-        noise = p.loadSound(u_snare);
+        noise = p.loadSound(u_closed_hh);
       };
 
       // p.setup = function () {
@@ -86,6 +86,7 @@ class Sketch extends React.Component {
         fft.setInput(mic);
 
         analyzer = new p5.Amplitude();
+        analyzer.toggleNormalize([1]);
         analyzer.setInput(mic);
 
       };
@@ -129,11 +130,23 @@ class Sketch extends React.Component {
         // AMP If amplitude level is greater than some threshold
         // MIDI If note returned for frequency value is equal to some value?
 
-        let threshold = 0.1;
-        if (rms > threshold) {
-          // midi
+        // let threshold = 0.1;
+
+        if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
+          bass = true;
         }
 
+        if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
+          snare = true;
+        }
+
+        if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
+          hi_hat_o = true;
+        }
+
+        if (fft.getCentroid() > 10300 && fft.getCentroid() < 10500 && rms > 0.4431) {
+          hi_hat_c = true;
+        }
 
         if (bass) {
           // Play sound if user input is recognized to be a beat
