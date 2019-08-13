@@ -1,0 +1,445 @@
+diff --git a/music-app/src/App.js b/music-app/src/App.js
+index dc27d11..d5d04ce 100644
+--- a/music-app/src/App.js
++++ b/music-app/src/App.js
+@@ -21,8 +21,6 @@ import snare from './real_drum/snare.mp3';
+ import open_hh from './real_drum/open_hh.mp3';
+ import closed_hh from './real_drum/closed_hh.mp3';
+ 
+-window._playback_beat = [];
+-
+ class App extends React.Component {
+   render() {
+     return (
+@@ -50,6 +48,8 @@ class Sketch extends React.Component {
+     // Use p5 score to playback the series of sounds
+ 
+     const self = this;
++    self._playback_beat = [];
++    self._last_sound_at = 0;
+ 
+     // var p5 = require("p5");
+     this.sketch = p => {
+@@ -58,6 +58,10 @@ class Sketch extends React.Component {
+       let bass_noise, snare_noise, open_noise, closed_noise;
+       let bass_sound, snare_sound, open_hh_sound, closed_hh_sound;
+ 
++      let average_sound = 0;
++
++      let source_sounds;
++
+       // Functions to be used for noise analysis
+       p.preload = function() { // For audio analysis
+         p.soundFormats('mp3', 'ogg');
+@@ -86,17 +90,6 @@ class Sketch extends React.Component {
+       // };
+ 
+       p.setup = function() {
+-        bass_fft = new p5.FFT();
+-        bass_fft.setInput(bass_noise);
+-
+-        snare_fft = new p5.FFT();
+-        snare_fft.setInput(snare_noise);
+-
+-        open_fft = new p5.FFT();
+-        open_fft.setInput(open_noise);
+-
+-        closed_fft = new p5.FFT();
+-        closed_fft.setInput(closed_noise);
+ 
+         canvas_freq = p.createCanvas(710, 200);
+         p.noFill();
+@@ -112,17 +105,13 @@ class Sketch extends React.Component {
+         analyzer.toggleNormalize([1]);
+         analyzer.setInput(mic);
+ 
++        source_sounds = [ bass_noise, snare_noise, open_noise, closed_noise ];
++
+         self.setState({loading: false});
+       };
+ 
+       p.draw = function() {
+-        if (self.state.recording) {
+-          // actually draw graphic
+-          p.background(80, 44, 52);
+-        } else {
+-          p.background(40, 44, 52);
+-
+-        }
++        p.clear();
+ 
+         // console.log("I wanna draw");
+         // Analyze and display spectrum of frequency
+@@ -130,19 +119,31 @@ class Sketch extends React.Component {
+         // console.log(spectrum);
+         p.beginShape();
+         for (let i = 0; i < spectrum.length; i++) {
+-          p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
++          p.vertex(
++            p.map(i, 0, 1024, 0, p.width),
++            p.map(spectrum[i], 0, 255, p.height, 0)
++          );
+         }
+         p.endShape();
+-
+-        if (!self.state.recording) {
+-          return;
+-        }
+-
+-        let spectrum_bass = bass_fft.analyze();
+-        let spectrum_snare = snare_fft.analyze();
+-        let spectrum_open = open_fft.analyze();
+-        let spectrum_closed = closed_fft.analyze();
+-
++        
++        // const values = spectrums.map(spec => {
++        //   let sum = 0;
++        //   for (let i = 0; i < spectrum.length; i++) {
++        //     sum = sum + (spectrum[i] - spec[i]) ^ 2;
++        //   }
++        //   return sum
++        // });
++
++        // console.log(values);
++
++        // values.forEach((v, idx) => {
++        //   p.rect(
++        //     p.map(idx, 0, values.length, 0, p.width),
++        //     0,
++        //     p.width / values.length,
++        //     p.map(v, 0, 46000, 0, p.height),
++        //   );
++        // });
+ 
+         // console.log("Centroid of Freq: " + fft.getCentroid());
+         //
+@@ -171,146 +172,158 @@ class Sketch extends React.Component {
+ 
+         let threshold = 0.1;
+ 
+-        let bass_sum = 0;
+-        for (let i = 0; i < spectrum.length; i++) {
+-          bass_sum = bass_sum + (spectrum[i] - spectrum_bass[i]) ^ 2;
+-        }
+-
+-        let snare_sum = 0;
+-        for (let i = 0; i < spectrum.length; i++) {
+-          snare_sum = snare_sum + (spectrum[i] - spectrum_snare[i]) ^ 2;
+-        }
+-
+-        let open_sum = 0;
+-        for (let i = 0; i < spectrum.length; i++) {
+-          open_sum = open_sum + (spectrum[i] - spectrum_open[i]) ^ 2;
+-        }
+-
+-        let closed_sum = 0;
+-        for (let i = 0; i < spectrum.length; i++) {
+-          closed_sum = closed_sum + (spectrum[i] - spectrum_closed[i]) ^ 2;
+-        }
+-
+-        // Conditional Sound Play
+-        if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
+-          bass = true;
++        if (!self.state.recording) {
++          return;
+         }
+ 
+-        if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
+-          snare = true;
+-        }
++        const centroids = [
++          816, 8980, 10221, 10306
++        ];
++        const amps = [
++          0.058, 0.107, 0.384, 0.4431
++        ];
+ 
++        const centroid = fft.getCentroid();
+ 
+-        if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
+-          hi_hat_o = true;
+-        }
++        const score = (idx) => {
++          const c = centroids[idx];
++          const a = amps[idx];
+ 
++          return Math.pow(c - centroid, 2);
++        };
+ 
+-        bass_fft = new p5.FFT();
+-        if (fft.getCentroid() > 10300 && fft.getCentroid() < 10500 && rms > 0.4431) {
+-          hi_hat_c = true;
+-        }
+ 
+-        // Function that does nothing but enables me to call timeout.
+-        function fillerFunc() {
+-          return true;
+-        }
++        const use = rms > average_sound * 1.5;
++        console.log(average_sound, rms);
++        average_sound = average_sound * 0.7 + rms * 0.3;
+ 
+-        // Phrase callback function
+-        function makeBassSound() {
+-          bass_sound.rate(1);
+-          bass_sound.play(0);
+-        }
+-        function makeSnareSound() {
+-          snare_sound.rate(1);
+-          snare_sound.play(0);
+-        }
+-        function makOpenSound() {
+-          open_hh_sound.rate(1);
+-          open_hh_sound.play(0);
+-        }
+-        function makeClosedSound() {
+-          closed_hh_sound.rate(1);
+-          closed_hh_sound.play(0);
++        if (!use) {
++          return;
+         }
+ 
+-        // Actually play sounds / save phrases to score for later playback
+-        if (bass) {
+-          // Play sound if user input is recognized to be a beat
+-          bass_sound.play();
+-          bass = false;
+-
+-          // Add sound to score
+-          let bass_phrase = new p5.Phrase('bass', makeBassSound, [0, 1, 0]);
+-          window._playback_beat.push(bass_phrase);
+-          setTimeout(fillerFunc, 1000);
++        let best_idx = 0;
++        let best_score = score(0);
+ 
++        for (let i = 1; i < source_sounds.length; ++i) {
++          const s = score(i);
++          if (s < best_score) {
++            best_score = s;
++            best_idx = i;
++          }
+         }
+ 
+-        if (snare) {
+-          // Play sound if user input is recognized to be a beat
+-          snare_sound.play();
+-          snare = false;
+-
++        self.addSound(source_sounds[best_idx]);
++
++// 
++//         // Conditional Sound Play
++//         if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
++//           bass = true;
++//         }
++// 
++//         if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
++//           snare = true;
++//         }
++// 
++//         if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
++//           hi_hat_o = true;
++//         }
++// 
++//         bass_fft = new p5.FFT();
++//         if (fft.getCentroid() > 10300 && fft.getCentroid() < 10500 && rms > 0.4431) {
++//           hi_hat_c = true;
++//         }
++// 
++//         // Actually play sounds / save phrases to score for later playback
++//         if (bass) {
++//           // Play sound if user input is recognized to be a beat
++//           bass = false;
++// 
++//           self.addSound(bass_sound);
++//         }
++// 
++//         if (snare) {
++//           // Play sound if user input is recognized to be a beat
++//           snare = false;
++// 
++// 
++//           self.addSound(snare_sound);
++// 
++//         }
++// 
++//         if (hi_hat_o) {
++//           // Play sound if user input is recognized to be a beat
++//           hi_hat_o = false;
++// 
++//           self.addSound(open_hh_sound);
++//         }
++// 
++// 
++//         if (hi_hat_c) {
++//           // Play sound if user input is recognized to be a beat
++//           hi_hat_c = false;
++// 
++//           self.addSound(closed_hh_sound);
++//         }
++      };
++    };
+ 
+-          // Add sound to score
+-          let snare_phrase = new p5.Phrase('snare', makeSnareSound, [0, 1, 0]);
+-          window._playback_beat.push(snare_phrase);
+-          setTimeout(fillerFunc, 1000);
++    this._myp5 = new p5(this.sketch);
++  }
+ 
+-        }
++  addSound = (sound) => {
++    const now = Date.now();
++    if (now - this._last_sound_at < 500) {
++      return;
++    }
+ 
+-        if (hi_hat_o) {
+-          // Play sound if user input is recognized to be a beat
+-          open_hh_sound.play();
+-          hi_hat_o = false;
++    console.log('sound added');
+ 
+-          // Add sound to score
+-          let open_phrase = new p5.Phrase('open', makOpenSound, [0, 1, 0]);
+-          window._playback_beat.push(open_phrase);
+-          setTimeout(fillerFunc, 1000);
++    this._last_sound_at = now;
++    this._playback_beat.push(sound);
++    sound.play();
++  };
+ 
+-        }
++  onMousePress= () => {
++    if (this.state.playing) {
++      return;
++    }
+ 
++    this.setState({ playing: true });
+ 
+-        if (hi_hat_c) {
+-          // Play sound if user input is recognized to be a beat
+-          closed_hh_sound.play();
+-          hi_hat_c = false;
++    let play_idx = 0;
+ 
+-          // Add sound to score
+-          let closed_phrase = new p5.Phrase('closed', makeClosedSound, [0, 1, 0]);
+-          window._playback_beat.push(closed_phrase);
+-          setTimeout(fillerFunc, 1000);
++    const playNext = () => {
++      if (play_idx >= this._playback_beat.length) {
++        this.setState({ playing: false });
++        return;
++      }
+ 
+-        }
+-      };
++      const sound = this._playback_beat[play_idx++];
++      sound.play();
++      setTimeout(playNext, sound.duration() * 1000);
+     };
+ 
+-    this._myp5 = new p5(this.sketch);
+-  }
+-
+-  onMousePress= () => {
+-    let main_score;
+-    console.log(window._playback_beat);
+-
+-
+-    if (window._playback_beat.length > 0) {
+-      const parts = new p5.Part();
+-      // window._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
+-      // window._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', () => playback(item), [1])));
+-      for (let i = 0; i < window._playback_beat.length; i++) {
+-        let item = window._playback_beat[i];
+-        parts.addPhrase(item);
+-        parts.setBPM(60);
+-      }
+-      console.log(parts);
+-      debugger;
+-      main_score = new p5.Score(parts);
+-      console.log(main_score);
+-      debugger;
+-      main_score.start();
+-    }
++    playNext();
++
++    // let main_score;
++    // console.log(this._playback_beat);
++
++    // if (this._playback_beat.length > 0) {
++    //   const parts = new p5.Part();
++    //   // this._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
++    //   // this._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', () => playback(item), [1])));
++    //   for (let i = 0; i < this._playback_beat.length; i++) {
++    //     let item = this._playback_beat[i];
++    //     parts.addPhrase(item);
++    //     parts.setBPM(60);
++    //   }
++    //   console.log(parts);
++    //   debugger;
++    //   main_score = new p5.Score(parts);
++    //   console.log(main_score);
++    //   debugger;
++    //   main_score.start();
++    // }
+   };
+ 
+ 
+@@ -321,7 +334,7 @@ class Sketch extends React.Component {
+ 
+     return (
+         // console.log(this.sketch(p5)),
+-        <div className="App">
++        <div className={'App' + (this.state.recording ? ' rec' : '')}>
+           <div className="App-header">
+             <img src={logo} className="App-logo" alt="logo"/>
+             <p>
+diff --git a/music-app/src/App.scss b/music-app/src/App.scss
+index 6238912..4dfab42 100644
+--- a/music-app/src/App.scss
++++ b/music-app/src/App.scss
+@@ -1,5 +1,22 @@
+ .App {
+   text-align: center;
++
++  .App-header {
++    background-color: #282c34;
++    min-height: 100vh;
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++    justify-content: center;
++    font-size: calc(10px + 2vmin);
++    color: white;
++  }
++
++  &.rec {
++    .App-header {
++      background-color: mix(#282c34, red, 80%);
++    }
++  }
+ }
+ 
+ .App-logo {
+@@ -10,17 +27,6 @@
+ 
+ $color: #282c34;
+ 
+-.App-header {
+-  background-color: #282c34;
+-  min-height: 100vh;
+-  display: flex;
+-  flex-direction: column;
+-  align-items: center;
+-  justify-content: center;
+-  font-size: calc(10px + 2vmin);
+-  color: white;
+-}
+-
+ .App-link {
+   color: #61dafb;
+ }
+
