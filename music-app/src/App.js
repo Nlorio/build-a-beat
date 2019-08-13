@@ -223,7 +223,7 @@ class Sketch extends React.Component {
 
         if (bass) {
           // Play sound if user input is recognized to be a beat
-          // bass_sound.play();
+          bass_sound.play();
 
           // Add sound to score
           window._playback_beat.push(bass_sound);
@@ -233,7 +233,7 @@ class Sketch extends React.Component {
 
         if (snare) {
           // Play sound if user input is recognized to be a beat
-          // snare_sound.play();
+          snare_sound.play();
 
           // Add sound to score
           window._playback_beat.push(snare_sound);
@@ -243,7 +243,7 @@ class Sketch extends React.Component {
 
         if (hi_hat_o) {
           // Play sound if user input is recognized to be a beat
-          // open_hh_sound.play();
+          open_hh_sound.play();
 
           // Add sound to score
           window._playback_beat.push(open_hh_sound);
@@ -253,7 +253,7 @@ class Sketch extends React.Component {
 
         if (hi_hat_c) {
           // Play sound if user input is recognized to be a beat
-          // closed_hh_sound.play();
+          closed_hh_sound.play();
 
           // Add sound to score
           window._playback_beat.push(closed_hh_sound);
@@ -268,15 +268,23 @@ class Sketch extends React.Component {
   onMousePress= () => {
     let main_score;
     console.log(window._playback_beat);
+
+    function playback(item) {
+      item.rate(1);
+      item.play(0);
+    }
+
     if (window._playback_beat.length > 0) {
       const parts = new p5.Part();
-      window._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
+      // window._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
+      window._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', playback(item), [1])));
       main_score = new p5.Score(parts);
       console.log(main_score);
       debugger;
       main_score.start();
     }
   };
+
 
   render = () => {
     const rec_button = this.state.recording
@@ -292,7 +300,7 @@ class Sketch extends React.Component {
               Build-A-Beat
             </p>
             <div id="freq_holder"></div>
-            )
+
             {/*// onClick={}*/}
             <div id="button_holder">
               {rec_button}
