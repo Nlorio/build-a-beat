@@ -120,8 +120,8 @@ class Sketch extends React.Component {
           // actually draw graphic
           p.background(80, 44, 52);
         } else {
-          // actually draw graphic
           p.background(40, 44, 52);
+
         }
 
         // console.log("I wanna draw");
@@ -175,89 +175,114 @@ class Sketch extends React.Component {
         for (let i = 0; i < spectrum.length; i++) {
           bass_sum = bass_sum + (spectrum[i] - spectrum_bass[i]) ^ 2;
         }
-        // console.log(bass_sum);
-        // if (bass_sum) {
-        //
-        // }
-
-        if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
-          bass = true;
-        }
-
 
         let snare_sum = 0;
         for (let i = 0; i < spectrum.length; i++) {
           snare_sum = snare_sum + (spectrum[i] - spectrum_snare[i]) ^ 2;
         }
-        if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
-          snare = true;
-        }
-
 
         let open_sum = 0;
         for (let i = 0; i < spectrum.length; i++) {
           open_sum = open_sum + (spectrum[i] - spectrum_open[i]) ^ 2;
         }
-        if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
-          hi_hat_o = true;
-        }
-        // p.setup = function () {
-        //   // noise.loop();
-        //   noise.play();
-        //   fft = new p5.FFT();
-        //   fft.setInput(noise);
-        //
-        //   analyzer = new p5.Amplitude();
-        //   analyzer.setInput(noise);
-        //
-        // };
 
-        bass_fft = new p5.FFT();
         let closed_sum = 0;
         for (let i = 0; i < spectrum.length; i++) {
           closed_sum = closed_sum + (spectrum[i] - spectrum_closed[i]) ^ 2;
         }
+
+        // Conditional Sound Play
+        if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
+          bass = true;
+        }
+
+        if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
+          snare = true;
+        }
+
+
+        if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
+          hi_hat_o = true;
+        }
+
+
+        bass_fft = new p5.FFT();
         if (fft.getCentroid() > 10300 && fft.getCentroid() < 10500 && rms > 0.4431) {
           hi_hat_c = true;
         }
 
+        // Function that does nothing but enables me to call timeout.
+        function fillerFunc() {
+          return true;
+        }
+
+        // Phrase callback function
+        function makeBassSound() {
+          bass_sound.rate(1);
+          bass_sound.play(0);
+        }
+        function makeSnareSound() {
+          snare_sound.rate(1);
+          snare_sound.play(0);
+        }
+        function makOpenSound() {
+          open_hh_sound.rate(1);
+          open_hh_sound.play(0);
+        }
+        function makeClosedSound() {
+          closed_hh_sound.rate(1);
+          closed_hh_sound.play(0);
+        }
+
+        // Actually play sounds / save phrases to score for later playback
         if (bass) {
           // Play sound if user input is recognized to be a beat
           bass_sound.play();
+          bass = false;
 
           // Add sound to score
-          window._playback_beat.push(bass_sound);
-          bass = false;
+          let bass_phrase = new p5.Phrase('bass', makeBassSound, [0, 1, 0]);
+          window._playback_beat.push(bass_phrase);
+          setTimeout(fillerFunc, 1000);
 
         }
 
         if (snare) {
           // Play sound if user input is recognized to be a beat
           snare_sound.play();
+          snare = false;
+
 
           // Add sound to score
-          window._playback_beat.push(snare_sound);
-          snare = false;
+          let snare_phrase = new p5.Phrase('snare', makeSnareSound, [0, 1, 0]);
+          window._playback_beat.push(snare_phrase);
+          setTimeout(fillerFunc, 1000);
 
         }
 
         if (hi_hat_o) {
           // Play sound if user input is recognized to be a beat
           open_hh_sound.play();
+          hi_hat_o = false;
 
           // Add sound to score
-          window._playback_beat.push(open_hh_sound);
-          hi_hat_o = false;
+          let open_phrase = new p5.Phrase('open', makOpenSound, [0, 1, 0]);
+          window._playback_beat.push(open_phrase);
+          setTimeout(fillerFunc, 1000);
+
         }
 
 
         if (hi_hat_c) {
           // Play sound if user input is recognized to be a beat
           closed_hh_sound.play();
+          hi_hat_c = false;
 
           // Add sound to score
-          window._playback_beat.push(closed_hh_sound);
-          hi_hat_c = false;
+          let closed_phrase = new p5.Phrase('closed', makeClosedSound, [0, 1, 0]);
+          window._playback_beat.push(closed_phrase);
+          setTimeout(fillerFunc, 1000);
+
         }
       };
     };
@@ -269,15 +294,18 @@ class Sketch extends React.Component {
     let main_score;
     console.log(window._playback_beat);
 
-    function playback(item) {
-      item.rate(1);
-      item.play(0);
-    }
 
     if (window._playback_beat.length > 0) {
       const parts = new p5.Part();
       // window._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
-      window._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', playback(item), [1])));
+      // window._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', () => playback(item), [1])));
+      for (let i = 0; i < window._playback_beat.length; i++) {
+        let item = window._playback_beat[i];
+        parts.addPhrase(item);
+        parts.setBPM(60);
+      }
+      console.log(parts);
+      debugger;
       main_score = new p5.Score(parts);
       console.log(main_score);
       debugger;
