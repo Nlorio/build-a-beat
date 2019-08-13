@@ -1,7 +1,7 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
-import { ReactMic } from 'react-mic';
-import MIDISounds from 'midi-sounds-react';
+// import { ReactMic } from 'react-mic';
+// import MIDISounds from 'midi-sounds-react';
 import logo from './Build-A-Beat.svg';
 import './App.scss';
 import p5 from 'p5';
