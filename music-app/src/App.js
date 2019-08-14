@@ -115,7 +115,7 @@ class Sketch extends React.Component {
 
       p.draw = function() {
         p.clear();
-
+        p.strokeWeight(1.5);
         // console.log("I wanna draw");
         // Analyze and display spectrum of frequency
         let spectrum = fft.analyze();
@@ -195,6 +195,17 @@ class Sketch extends React.Component {
         };
 
 
+        // noise_spectrums =
+        // const values = spectrums.map(spec => {
+        //   let sum = 0;
+        //   for (let i = 0; i < spectrum.length; i++) {
+        //     sum = sum + (spectrum[i] - spec[i]) ^ 2;
+        //   }
+        //   return sum
+        // });
+
+
+
         const use = rms > average_sound * 1.5;
         console.log(average_sound, rms);
         average_sound = average_sound * 0.7 + rms * 0.3;
@@ -220,56 +231,6 @@ class Sketch extends React.Component {
 
         // Build a score (ranks score in relation to bass, snare, open, close) - Build from input and its relation to the user_input tested noise
 
-// 
-//         // Conditional Sound Play
-//         if (fft.getCentroid() > 800 && fft.getCentroid() < 1000 && rms > 0.058) {
-//           bass = true;
-//         }
-// 
-//         if (fft.getCentroid() > 8900 && fft.getCentroid() < 10100 && rms > 0.107) {
-//           snare = true;
-//         }
-// 
-//         if (fft.getCentroid() > 10100 && fft.getCentroid() < 10300 && rms > 0.384) {
-//           hi_hat_o = true;
-//         }
-// 
-//         bass_fft = new p5.FFT();
-//         if (fft.getCentroid() > 10300 && fft.getCentroid() < 10500 && rms > 0.4431) {
-//           hi_hat_c = true;
-//         }
-// 
-//         // Actually play sounds / save phrases to score for later playback
-//         if (bass) {
-//           // Play sound if user input is recognized to be a beat
-//           bass = false;
-// 
-//           self.addSound(bass_sound);
-//         }
-// 
-//         if (snare) {
-//           // Play sound if user input is recognized to be a beat
-//           snare = false;
-// 
-// 
-//           self.addSound(snare_sound);
-// 
-//         }
-// 
-//         if (hi_hat_o) {
-//           // Play sound if user input is recognized to be a beat
-//           hi_hat_o = false;
-// 
-//           self.addSound(open_hh_sound);
-//         }
-// 
-// 
-//         if (hi_hat_c) {
-//           // Play sound if user input is recognized to be a beat
-//           hi_hat_c = false;
-// 
-//           self.addSound(closed_hh_sound);
-//         }
       };
     };
 
@@ -339,16 +300,14 @@ class Sketch extends React.Component {
             </p>
             <div id="freq_holder"></div>
 
-            {/*// onClick={}*/}
             <div id="button_holder">
               {rec_button}
               <button className="buttons" type="button" onClick={this.onMousePress}>Build My Beat</button>
               <button className="buttons" type="button" onClick={this.onMousePressClear}>Clear</button>
 
-               {/*Fake export button */}
-              {/*<button className="buttons" type="button">One to One Beat Maker Mode</button>*/}
             </div>
 
+            {/*Fake export button */}
             <button className="export_button" type="button" >Export</button>
 
           </div>
