@@ -60,7 +60,9 @@ class Sketch extends React.Component {
 
       let average_sound = 0;
 
+      let output_sounds;
       let source_sounds;
+
 
       // Functions to be used for noise analysis
       p.preload = function() { // For audio analysis
@@ -105,6 +107,7 @@ class Sketch extends React.Component {
         analyzer.toggleNormalize([1]);
         analyzer.setInput(mic);
 
+        output_sounds = [ bass_sound, snare_sound, open_hh_sound, closed_hh_sound ];
         source_sounds = [ bass_noise, snare_noise, open_noise, closed_noise ];
 
         self.setState({loading: false});
@@ -160,17 +163,16 @@ class Sketch extends React.Component {
         let rms = analyzer.getLevel();
         // console.log("Amplitude: " + rms);
 
-        let bass = false;
-        let snare = false;
-        let hi_hat_o = false;
-        let hi_hat_c = false;
+        // let bass = false;
+        // let snare = false;
+        // let hi_hat_o = false;
+        // let hi_hat_c = false;
 
         // Thresholds & Beats based off of input
         // FREQ If certain element of frequency spectrum is greater than some threshold
         // AMP If amplitude level is greater than some threshold
         // MIDI If note returned for frequency value is equal to some value?
 
-        let threshold = 0.1;
 
         if (!self.state.recording) {
           return;
@@ -212,7 +214,11 @@ class Sketch extends React.Component {
           }
         }
 
-        self.addSound(source_sounds[best_idx]);
+        self.addSound(output_sounds[best_idx]);
+
+
+
+        // Build a score (ranks score in relation to bass, snare, open, close) - Build from input and its relation to the user_input tested noise
 
 // 
 //         // Conditional Sound Play
@@ -305,25 +311,6 @@ class Sketch extends React.Component {
 
     playNext();
 
-    // let main_score;
-    // console.log(this._playback_beat);
-
-    // if (this._playback_beat.length > 0) {
-    //   const parts = new p5.Part();
-    //   // this._playback_beat.forEach(item => parts.addPhrase(() => item.play()));
-    //   // this._playback_beat.forEach(item => parts.addPhrase(() => new p5.Phrase('beat', () => playback(item), [1])));
-    //   for (let i = 0; i < this._playback_beat.length; i++) {
-    //     let item = this._playback_beat[i];
-    //     parts.addPhrase(item);
-    //     parts.setBPM(60);
-    //   }
-    //   console.log(parts);
-    //   debugger;
-    //   main_score = new p5.Score(parts);
-    //   console.log(main_score);
-    //   debugger;
-    //   main_score.start();
-    // }
   };
 
 
