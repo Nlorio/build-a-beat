@@ -313,6 +313,16 @@ class Sketch extends React.Component {
 
   };
 
+ onMousePressClear = () => {
+   if (this.state.playing) {
+     return;
+   }
+
+   // Reset playback beat array
+  this._playback_beat.length = 0;
+
+  };
+
 
   render = () => {
     const rec_button = this.state.recording
@@ -333,8 +343,13 @@ class Sketch extends React.Component {
             <div id="button_holder">
               {rec_button}
               <button className="buttons" type="button" onClick={this.onMousePress}>Build My Beat</button>
+              <button className="buttons" type="button" onClick={this.onMousePressClear}>Clear</button>
+
+               {/*Fake export button */}
               {/*<button className="buttons" type="button">One to One Beat Maker Mode</button>*/}
             </div>
+
+            <button className="export_button" type="button" >Export</button>
 
           </div>
         </div>

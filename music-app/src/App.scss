@@ -49,6 +49,7 @@ $color: #282c34;
 
 
 .buttons {
+  margin: 10px;
   background-color: #191d25;
   min-width: 25vh;
   min-height: 6vh;
@@ -58,22 +59,23 @@ $color: #282c34;
   justify-content: center;
   color: white;
   border: none;
+  font-size: 16px;
+  //font-family:
 
-
-  //background-color: #4CAF50; /* Green */
-  //
-  //border: none;
-  //color: white;
-  //padding: 15px 32px;
-  //text-align: center;
-  //text-decoration: none;
-  //display: inline-block;
-  //font-size: 16px;
 }
 
-//.body {
-//  margin: 0;
-//  display: flex;
-//  justify-content: center;
-//
-//}
+.export_button {
+  float:right;
+  margin: 10px;
+  background-color: #191d25;
+  min-width: 79vh;
+  min-height: 6vh;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  color: white;
+  border: none;
+  font-size: 16px;
+
+}
