@@ -22,11 +22,20 @@ import open_hh from './real_drum/open_hh.mp3';
 import closed_hh from './real_drum/closed_hh.mp3';
 
 class App extends React.Component {
+  constructor() {
+    super();
+    const self = this;
+    self._bass_spectrum = new PreProcessingGivenType(u_bass);
+    console.log(self._bass_spectrum);
+    debugger;
+
+  }
   render() {
     return (
         // test functionality of PreProcessing
-        < PreProcessingGivenType type={u_bass} />
-        // {/*<Sketch />*/}
+        // < PreProcessingGivenType type={u_bass} />
+         <Sketch />
+        //<Sketch scoring_comparison_data={this._bass_spectrum}/>
 
     );
   }
@@ -34,71 +43,71 @@ class App extends React.Component {
 
 
 class PreProcessingGivenType extends React.Component {
-  constructor(type) {
-    super(type);
-    const self = this;
-    // self.state = {
-    //   _spectrum_returned : []
-    // };
-    self._spectrum_returned = [];
-    self.spectrums_with_amp = [];
-    self._count = 0;
-    // self._last_sound_at = 0;
+    constructor(type) {
+      super(type);
 
-    // var p5 = require("p5");
-    this.sketch = p => {
-      let fft;
-      let noise;
-      let amp;
+      const self = this;
+      self._spectrum_returned = [];
+      self.spectrums_with_amp = [];
+      self._count = 0;
+      // self._last_sound_at = 0;
 
-      p.preload = function() { // For audio analysis
-        p.soundFormats('mp3', 'ogg');
-        noise = p.loadSound(type.type);
-      };
+      // var p5 = require("p5");
+      this.sketch = p => {
+        let fft;
+        let noise;
+        let amp;
 
-      p.setup = function() {
-        noise.play();
-        fft = new p5.FFT();
-        fft.setInput(noise);
+        p.preload = function () { // For audio analysis
+          p.soundFormats('mp3', 'ogg');
+          noise = p.loadSound(type.type);
+        };
 
-        amp = new p5.Amplitude();
-        amp.setInput(noise);
-      };
+        p.setup = function () {
+          noise.play();
+          fft = new p5.FFT();
+          fft.setInput(noise);
 
-      p.draw = function () {
-        self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
-        if (self._count === 200) {
-          // Find max amplitude and save the spectrum that occured at that point.
-          let max = [0, 0];
-          let i;
-          for (i = 0; i < self.spectrums_with_amp.length; i++) {
-            let analysis = self.spectrums_with_amp[i];
-            console.log(analysis[0]);
-            if (analysis[1] > max[1]) {
-              max = [analysis[0], analysis[1]];
+          amp = new p5.Amplitude();
+          amp.setInput(noise);
+        };
+
+        p.draw = function () {
+          self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
+          if (self._count === 200) {
+            // Find max amplitude and save the spectrum that occured at that point.
+            let max = [0, 0];
+            let i;
+            for (i = 0; i < self.spectrums_with_amp.length; i++) {
+              let analysis = self.spectrums_with_amp[i];
+              console.log(analysis[0]);
+              if (analysis[1] > max[1]) {
+                max = [analysis[0], analysis[1]];
+              }
             }
+
+            // save a value to be returned by the class/function
+            self._spectrum_returned = max;
+            console.log(self.spectrums_with_amp);
+            console.log(self._spectrum_returned);
+
           }
 
-          // save a value to be returned by the class/function
-          self._spectrum_returned = max;
-          console.log(self.spectrums_with_amp);
-          console.log(self._spectrum_returned);
-
+          self._count++;
         }
 
-        self._count ++;
-      }
 
+      };
 
-    };
+      this._preProcessing_p5 = new p5(this.sketch);
 
-    this._preProcessing_p5 = new p5(this.sketch);
+    }
+    render() {
+      return this._spectrum_returned;
+    }
+
   }
-  render = () => {
-    return this._spectrum_returned;
-  }
 
-}
 
 
 
@@ -106,9 +115,9 @@ class PreProcessingGivenType extends React.Component {
 
 class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
-  constructor(props) {
+  constructor(scoring_comparison_data) {
     // run regular ass javascript inside the constructor
-    super(props); // Sets up the class for me
+    super(scoring_comparison_data); // Sets up the class for me
 
     this.state = {
       loading: true,
