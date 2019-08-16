@@ -25,10 +25,16 @@ class App extends React.Component {
   constructor(prop) {
     super(prop);
 
-    preProcessingGivenType(u_bass).then(res => {
-      console.log(res);
-      this.setState({ bass : res });
-    });
+    this.state = {
+      ready : false
+    };
+
+    let process_bass = () => {
+      preProcessingGivenType(u_bass).then(res => {
+        console.log(res);
+        this.setState({bass: res});
+      });
+    };
 
     let process_snare = () => {
     preProcessingGivenType(u_snare).then(res => {
@@ -49,22 +55,33 @@ class App extends React.Component {
         this.setState({closed: res});
       });
     };
-    setTimeout(process_snare, 1000);
-    setTimeout(process_open, 2000);
-    setTimeout(process_closed, 3000);
+
+    let build_arguments = () => {
+      let temp = [this.state.bass, this.state.snare, this.state.open, this.state.closed];
+      // let temp = {bass: this.state.bass,
+      //             snare: this.state.snare,
+      //             open: this.state.open,
+      //             closed: this.state.closed};
+      console.log(temp);
+      this.setState({all_arg : temp} );
+      this.setState( {ready : true} );
+    };
+    setTimeout(build_arguments, 8000);
+
+    setTimeout(process_bass, 1000);
+    setTimeout(process_snare, 2000);
+    setTimeout(process_open, 3000);
+    setTimeout(process_closed, 4000);
+
+
 
     // debugger;
-    console.log(this.state);
   }
   // this.state.bass
   render() {
-    return (
-        // test functionality of PreProcessing
-        // < PreProcessingGivenType type={u_bass} />
-         <Sketch />
-        //<Sketch scoring_comparison_data={this._bass_spectrum}/>
-
-    );
+    const {ready} = this.state;
+    console.log(ready);
+    return ready ? <Sketch data={this.state.all_arg}/> : <span> Loading Elements </span>;
   }
 }
 
@@ -126,9 +143,13 @@ function preProcessingGivenType(type) {
 
 class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
-  constructor(scoring_comparison_data) {
+  constructor(data) {
     // run regular ass javascript inside the constructor
-    super(scoring_comparison_data); // Sets up the class for me
+    super(data); // Sets up the class for me
+
+    const comp_data = data.data;
+    console.log(data);
+    console.log(comp_data);
 
     this.state = {
       loading: true,
@@ -255,6 +276,26 @@ class Sketch extends React.Component {
           return;
         }
 
+
+        // Determine score - Cycle through each spectrum calculate score for each - lowest sum = highest score
+        let i;
+        let scores = [];
+        // debugger;
+        // let scoring_comparison = scoring_comparison_data;
+        for (i = 0; i < comp_data.length; i++) {
+          // debugger;
+          let comp_spectrum = comp_data[i][0];
+          let j;
+          let sum = 0;
+          for (j = 0; j < spectrum.length; j++) {
+            sum += Math.pow(spectrum[j] - comp_spectrum[j], 2);
+          }
+          scores.push(sum);
+        }
+        // console.log(scores);
+
+
+
         const centroids = [
           816, 8980, 10221, 10306
         ];
@@ -284,7 +325,7 @@ class Sketch extends React.Component {
 
 
         const use = rms > average_sound * 1.5;
-        console.log(average_sound, rms);
+        // console.log(average_sound, rms);
         average_sound = average_sound * 0.7 + rms * 0.3;
 
         if (!use) {
@@ -294,8 +335,11 @@ class Sketch extends React.Component {
         let best_idx = 0;
         let best_score = score(0);
 
-        for (let i = 1; i < output_sounds.length; ++i) {
-          const s = score(i);
+        for (let i = 0; i < output_sounds.length; ++i) {
+          console.log("new: " + scores[i]);
+          console.log("old: " + score(i));
+          // const s = score(i);
+          const s = scores[i];
           if (s < best_score) {
             best_score = s;
             best_idx = i;
@@ -320,7 +364,7 @@ class Sketch extends React.Component {
       return;
     }
 
-    console.log('sound added');
+    // console.log('sound added');
 
     this._last_sound_at = now;
     this._playback_beat.push(sound);
@@ -344,7 +388,7 @@ class Sketch extends React.Component {
 
       const sound = this._playback_beat[play_idx++];
       sound.play();
-      setTimeout(playNext, sound.duration() * 1000);
+      setTimeout(playNext, sound.duration() * 2000);
     };
 
     playNext();
