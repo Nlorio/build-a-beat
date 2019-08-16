@@ -29,10 +29,33 @@ class App extends React.Component {
       console.log(res);
       this.setState({ bass : res });
     });
-    // debugger;
-    // console.log(this.state.bass);
-  }
 
+    let process_snare = () => {
+    preProcessingGivenType(u_snare).then(res => {
+      console.log(res);
+      this.setState({ snare : res });
+    });
+    };
+    let process_open = () => {
+      preProcessingGivenType(u_open_hh).then(res => {
+        console.log(res);
+        this.setState({open: res});
+      });
+    };
+
+    let process_closed = () => {
+      preProcessingGivenType(u_closed_hh).then(res => {
+        console.log(res);
+        this.setState({closed: res});
+      });
+    };
+    setTimeout(process_snare, 1000);
+    setTimeout(process_open, 2000);
+    setTimeout(process_closed, 3000);
+
+    // debugger;
+    console.log(this.state);
+  }
   // this.state.bass
   render() {
     return (
@@ -60,11 +83,11 @@ function preProcessingGivenType(type) {
       p.preload = function () { // For audio analysis
         p.soundFormats('mp3', 'ogg');
         noise = p.loadSound(type);
-        debugger;
+        // debugger;
       };
 
       p.setup = function () {
-        debugger;
+        // debugger;
         noise.play();
         // debugger;
         fft = new p5.FFT();
