@@ -30,6 +30,153 @@ class App extends React.Component {
   }
 }
 
+
+class preProcessingGivenType extends React.Component {
+  constructor(type) {
+    super(type);
+    const self = this;
+    self._spectrum = [];
+    // self.spectrums_with_amp = [];
+    // self._last_sound_at = 0;
+
+    // var p5 = require("p5");
+    this.sketch = p => {
+      let fft;
+      let noise;
+      let amp;
+
+      let counter = 0;
+
+
+      p.preload = function() { // For audio analysis
+        p.soundFormats('mp3', 'ogg');
+        noise = p.loadSound(type);
+      };
+
+      p.setup = function() {
+        noise.play();
+        fft = new p5.FFT();
+        fft.setInput(noise);
+
+        amp = new p5.Amplitude();
+        amp.toggleNormalize([1]);
+        amp.setInput(noise);
+      };
+
+      p.draw = function () {
+        self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
+
+        if (counter === 1000) {
+          // Find max amplitude and save the spectrum that occured at that point.
+          let max = [0, 0];
+          for (var analysis in self.spectrums_with_amp) {
+
+
+            }
+          }
+
+        counter ++;
+      }
+
+
+    }
+
+  }
+
+}
+
+class preProcessing extends React.Component {
+  constructor() {
+    super();
+    const self = this;
+    self._spectrums = [];
+    self.spectrums_with_amp = [];
+    // self._last_sound_at = 0;
+
+    // var p5 = require("p5");
+    this.sketch = p => {
+      let bass_fft, snare_fft, open_fft, closed_fft;
+      let bass_noise, snare_noise, open_noise, closed_noise;
+      let bass_amp, snare_amp, open_amp, closed_amp;
+      let amps;
+      let source_sounds;
+      let spectrum_ffts;
+
+      let counter = 0;
+
+
+      p.preload = function() { // For audio analysis
+        p.soundFormats('mp3', 'ogg');
+        // Load in noise, loop noise and analyze the beats one by one to determine threshold
+        bass_noise = p.loadSound(u_bass);
+        snare_noise = p.loadSound(u_snare);
+        open_noise = p.loadSound(u_open_hh);
+        closed_noise = p.loadSound(u_closed_hh);
+        source_sounds = [bass_noise, snare_noise, open_noise, closed_noise];
+
+      };
+
+      p.setup = function() {
+        bass_fft = new p5.FFT();
+        snare_fft = new p5.FFT();
+        open_fft = new p5.FFT();
+        closed_fft = new p5.FFT();
+
+        bass_fft.setInput(bass_noise);
+        snare_fft.setInput(snare_noise);
+        open_fft.setInput(open_noise);
+        closed_fft.setInput(closed_noise);
+
+        spectrum_ffts = [bass_fft, snare_fft, open_fft, closed_fft];
+
+        bass_amp = new p5.Amplitude();
+        bass_amp.toggleNormalize([1]);
+        bass_amp.setInput(source_sounds[0]);
+
+
+        // ...
+
+        amps = [bass_amp, snare_amp, open_amp, closed_amp];
+
+      };
+
+      p.draw = function () {
+        let i;
+        let spectrum_snapshot = [];
+        for (i = 0; i < 4; i++) {
+          let spec_result = spectrum_ffts[i].analyze();
+          let amp_result = amps[i].getLevel();
+          spectrum_snapshot.push([spec_result, amp_result]);
+        }
+
+        self.spectrums_with_amp.push(spectrum_snapshot);
+
+        if (counter === 1000) {
+          // Find max amplitude and save the spectrum that occured at that point.
+          let max = [0, 0];
+          for (var snapshot_analysis in self.spectrums_with_amp) {
+            for (i = 0; i < 4; i++) {
+              if (snapshot_analysis[1][i][1] > max[1]) {
+                 max = [snapshot_analysis[1][i], snapshot_analysis[1][i][1]]
+              }
+
+            }
+          }
+        }
+
+        counter ++;
+      }
+
+
+    }
+
+  }
+
+}
+
+
+
+
 // P5 Analyze Stream of Audio
 class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
@@ -54,14 +201,13 @@ class Sketch extends React.Component {
     // var p5 = require("p5");
     this.sketch = p => {
       let mic, fft, canvas_freq, analyzer;
-      let bass_fft, snare_fft, open_fft, closed_fft;
-      let bass_noise, snare_noise, open_noise, closed_noise;
+      // let bass_fft, snare_fft, open_fft, closed_fft;
       let bass_sound, snare_sound, open_hh_sound, closed_hh_sound;
 
       let average_sound = 0;
 
       let output_sounds;
-      let source_sounds;
+      // let source_sounds;
 
 
       // Functions to be used for noise analysis
@@ -73,23 +219,8 @@ class Sketch extends React.Component {
         open_hh_sound = p.loadSound(open_hh);
         closed_hh_sound = p.loadSound(closed_hh);
 
-        // Load in noise, loop noise and analyze the beats one by one to determine threshold
-        bass_noise = p.loadSound(u_bass);
-        snare_noise = p.loadSound(u_snare);
-        open_noise = p.loadSound(u_open_hh);
-        closed_noise = p.loadSound(u_closed_hh);
       };
 
-      // p.setup = function () {
-      //   // noise.loop();
-      //   noise.play();
-      //   fft = new p5.FFT();
-      //   fft.setInput(noise);
-      //
-      //   analyzer = new p5.Amplitude();
-      //   analyzer.setInput(noise);
-      //
-      // };
 
       p.setup = function() {
 
@@ -108,7 +239,7 @@ class Sketch extends React.Component {
         analyzer.setInput(mic);
 
         output_sounds = [ bass_sound, snare_sound, open_hh_sound, closed_hh_sound ];
-        source_sounds = [ bass_noise, snare_noise, open_noise, closed_noise ];
+        // source_sounds = [ bass_noise, snare_noise, open_noise, closed_noise ];
 
         self.setState({loading: false});
       };
@@ -217,7 +348,7 @@ class Sketch extends React.Component {
         let best_idx = 0;
         let best_score = score(0);
 
-        for (let i = 1; i < source_sounds.length; ++i) {
+        for (let i = 1; i < output_sounds.length; ++i) {
           const s = score(i);
           if (s < best_score) {
             best_score = s;
