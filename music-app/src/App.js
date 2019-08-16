@@ -35,8 +35,12 @@ class preProcessingGivenType extends React.Component {
   constructor(type) {
     super(type);
     const self = this;
-    self._spectrum = [];
-    // self.spectrums_with_amp = [];
+    // self.state = {
+    //   _spectrum_returned : []
+    // };
+    self._spectrum_returned = [];
+    self.spectrums_with_amp = [];
+    self._count = 0;
     // self._last_sound_at = 0;
 
     // var p5 = require("p5");
@@ -44,9 +48,6 @@ class preProcessingGivenType extends React.Component {
       let fft;
       let noise;
       let amp;
-
-      let counter = 0;
-
 
       p.preload = function() { // For audio analysis
         p.soundFormats('mp3', 'ogg');
@@ -66,118 +67,39 @@ class preProcessingGivenType extends React.Component {
       p.draw = function () {
         self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
 
-        if (counter === 1000) {
+        if (self._count === 1000) {
           // Find max amplitude and save the spectrum that occured at that point.
           let max = [0, 0];
           for (var analysis in self.spectrums_with_amp) {
-
-
+            if (analysis[1] > max[1]) {
+              max = [analysis[0], analysis[1]];
             }
           }
 
-        counter ++;
+          // save a value to be returned by the class/function
+          self._spectrum_returned = max;
+        }
+
+        self._count ++;
       }
 
 
-    }
+    };
 
+    this._preProcessing_p5 = new p5(this.sketch);
+  }
+  render = () => {
+    return this._spectrum_returned;
   }
 
-}
 
-class preProcessing extends React.Component {
-  constructor() {
-    super();
-    const self = this;
-    self._spectrums = [];
-    self.spectrums_with_amp = [];
-    // self._last_sound_at = 0;
-
-    // var p5 = require("p5");
-    this.sketch = p => {
-      let bass_fft, snare_fft, open_fft, closed_fft;
-      let bass_noise, snare_noise, open_noise, closed_noise;
-      let bass_amp, snare_amp, open_amp, closed_amp;
-      let amps;
-      let source_sounds;
-      let spectrum_ffts;
-
-      let counter = 0;
-
-
-      p.preload = function() { // For audio analysis
-        p.soundFormats('mp3', 'ogg');
-        // Load in noise, loop noise and analyze the beats one by one to determine threshold
-        bass_noise = p.loadSound(u_bass);
-        snare_noise = p.loadSound(u_snare);
-        open_noise = p.loadSound(u_open_hh);
-        closed_noise = p.loadSound(u_closed_hh);
-        source_sounds = [bass_noise, snare_noise, open_noise, closed_noise];
-
-      };
-
-      p.setup = function() {
-        bass_fft = new p5.FFT();
-        snare_fft = new p5.FFT();
-        open_fft = new p5.FFT();
-        closed_fft = new p5.FFT();
-
-        bass_fft.setInput(bass_noise);
-        snare_fft.setInput(snare_noise);
-        open_fft.setInput(open_noise);
-        closed_fft.setInput(closed_noise);
-
-        spectrum_ffts = [bass_fft, snare_fft, open_fft, closed_fft];
-
-        bass_amp = new p5.Amplitude();
-        bass_amp.toggleNormalize([1]);
-        bass_amp.setInput(source_sounds[0]);
-
-
-        // ...
-
-        amps = [bass_amp, snare_amp, open_amp, closed_amp];
-
-      };
-
-      p.draw = function () {
-        let i;
-        let spectrum_snapshot = [];
-        for (i = 0; i < 4; i++) {
-          let spec_result = spectrum_ffts[i].analyze();
-          let amp_result = amps[i].getLevel();
-          spectrum_snapshot.push([spec_result, amp_result]);
-        }
-
-        self.spectrums_with_amp.push(spectrum_snapshot);
-
-        if (counter === 1000) {
-          // Find max amplitude and save the spectrum that occured at that point.
-          let max = [0, 0];
-          for (var snapshot_analysis in self.spectrums_with_amp) {
-            for (i = 0; i < 4; i++) {
-              if (snapshot_analysis[1][i][1] > max[1]) {
-                 max = [snapshot_analysis[1][i], snapshot_analysis[1][i][1]]
-              }
-
-            }
-          }
-        }
-
-        counter ++;
-      }
-
-
-    }
-
-  }
 
 }
 
 
 
 
-// P5 Analyze Stream of Audio
+
 class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
   constructor(props) {
