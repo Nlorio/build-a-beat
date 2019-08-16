@@ -24,14 +24,16 @@ import closed_hh from './real_drum/closed_hh.mp3';
 class App extends React.Component {
   render() {
     return (
-        <Sketch />
+        // test functionality of PreProcessing
+        < PreProcessingGivenType type={u_bass} />
+        // {/*<Sketch />*/}
 
     );
   }
 }
 
 
-class preProcessingGivenType extends React.Component {
+class PreProcessingGivenType extends React.Component {
   constructor(type) {
     super(type);
     const self = this;
@@ -51,7 +53,7 @@ class preProcessingGivenType extends React.Component {
 
       p.preload = function() { // For audio analysis
         p.soundFormats('mp3', 'ogg');
-        noise = p.loadSound(type);
+        noise = p.loadSound(type.type);
       };
 
       p.setup = function() {
@@ -60,17 +62,18 @@ class preProcessingGivenType extends React.Component {
         fft.setInput(noise);
 
         amp = new p5.Amplitude();
-        amp.toggleNormalize([1]);
         amp.setInput(noise);
       };
 
       p.draw = function () {
         self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
-
-        if (self._count === 1000) {
+        if (self._count === 200) {
           // Find max amplitude and save the spectrum that occured at that point.
           let max = [0, 0];
-          for (var analysis in self.spectrums_with_amp) {
+          let i;
+          for (i = 0; i < self.spectrums_with_amp.length; i++) {
+            let analysis = self.spectrums_with_amp[i];
+            console.log(analysis[0]);
             if (analysis[1] > max[1]) {
               max = [analysis[0], analysis[1]];
             }
@@ -78,6 +81,9 @@ class preProcessingGivenType extends React.Component {
 
           // save a value to be returned by the class/function
           self._spectrum_returned = max;
+          console.log(self.spectrums_with_amp);
+          console.log(self._spectrum_returned);
+
         }
 
         self._count ++;
@@ -91,8 +97,6 @@ class preProcessingGivenType extends React.Component {
   render = () => {
     return this._spectrum_returned;
   }
-
-
 
 }
 
