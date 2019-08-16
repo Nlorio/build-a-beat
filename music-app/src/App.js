@@ -22,14 +22,18 @@ import open_hh from './real_drum/open_hh.mp3';
 import closed_hh from './real_drum/closed_hh.mp3';
 
 class App extends React.Component {
-  constructor() {
-    super();
-    const self = this;
-    self._bass_spectrum = new PreProcessingGivenType(u_bass);
-    console.log(self._bass_spectrum);
-    debugger;
+  constructor(prop) {
+    super(prop);
 
+    preProcessingGivenType(u_bass).then(res => {
+      console.log(res);
+      this.setState({ bass : res });
+    });
+    // debugger;
+    // console.log(this.state.bass);
   }
+
+  // this.state.bass
   render() {
     return (
         // test functionality of PreProcessing
@@ -41,77 +45,61 @@ class App extends React.Component {
   }
 }
 
+function preProcessingGivenType(type) {
+  return new Promise(resolve => {
+    let spectrums_with_amp = [];
+    let count = 0;
+    // let processingP5;
+    // self._last_sound_at = 0;
 
-class PreProcessingGivenType extends React.Component {
-    constructor(type) {
-      super(type);
+    const sketch = p => {
+      let fft;
+      let noise;
+      let amp;
 
-      const self = this;
-      self._spectrum_returned = [];
-      self.spectrums_with_amp = [];
-      self._count = 0;
-      // self._last_sound_at = 0;
-
-      // var p5 = require("p5");
-      this.sketch = p => {
-        let fft;
-        let noise;
-        let amp;
-
-        p.preload = function () { // For audio analysis
-          p.soundFormats('mp3', 'ogg');
-          noise = p.loadSound(type.type);
-        };
-
-        p.setup = function () {
-          noise.play();
-          fft = new p5.FFT();
-          fft.setInput(noise);
-
-          amp = new p5.Amplitude();
-          amp.setInput(noise);
-        };
-
-        p.draw = function () {
-          self.spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
-          if (self._count === 200) {
-            // Find max amplitude and save the spectrum that occured at that point.
-            let max = [0, 0];
-            let i;
-            for (i = 0; i < self.spectrums_with_amp.length; i++) {
-              let analysis = self.spectrums_with_amp[i];
-              console.log(analysis[0]);
-              if (analysis[1] > max[1]) {
-                max = [analysis[0], analysis[1]];
-              }
-            }
-
-            // save a value to be returned by the class/function
-            self._spectrum_returned = max;
-            console.log(self.spectrums_with_amp);
-            console.log(self._spectrum_returned);
-
-          }
-
-          self._count++;
-        }
-
-
+      p.preload = function () { // For audio analysis
+        p.soundFormats('mp3', 'ogg');
+        noise = p.loadSound(type);
+        debugger;
       };
 
-      this._preProcessing_p5 = new p5(this.sketch);
+      p.setup = function () {
+        debugger;
+        noise.play();
+        // debugger;
+        fft = new p5.FFT();
+        fft.setInput(noise);
 
-    }
-    render() {
-      return this._spectrum_returned;
-    }
+        amp = new p5.Amplitude();
+        amp.setInput(noise);
+      };
 
-  }
+      p.draw = function () {
+        // debugger;
+        spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
+        if (count === 200) {
+          // Find max amplitude and save the spectrum that occured at that point.
+          let max = [0, 0];
+          let i;
+          for (i = 0; i < spectrums_with_amp.length; i++) {
+            let analysis = spectrums_with_amp[i];
+            // console.log(analysis[0]);
+            if (analysis[1] > max[1]) {
+              max = [analysis[0], analysis[1]];
+            }
+          }
 
+          // save a value to be returned by the class/function
+          resolve(max);
+        }
 
+        count++;
+      };
+    };
 
-
-
+    const _ = new p5(sketch);
+  });
+}
 
 class Sketch extends React.Component {
   // new p5(this.sketch, this.root);
