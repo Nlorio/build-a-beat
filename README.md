@@ -1,4 +1,4 @@
-# Convert Your Beat: https://nlorio.github.io/160_final/
+# Convert Your Beat: https://nlorio.github.io/BuildABeat/
 
 I used reactJS for development. The microphone interaction and the ability to record and playback audio was the first feature to be designed and incorporated. This was done without any large libraries or packages.
 
@@ -23,7 +23,7 @@ I built a pre processing function which takes in a user input sample sound and o
 Finally, I added some touch-ups, interactivity, and buttons to the application. Users may stop/start recording/transforming their beat. Users can play back their newly built beat. Users may clear their created beat to start again. Users may furthermore export their beat for later use in larger audio processing applications such as Logic.
 
 
-Feel free to checkout the github page: https://github.com/Nlorio/160_final.git
-View the live application here! https://nlorio.github.io/160_final/
+Feel free to checkout the github page: https://github.com/Nlorio/BuildABeat.git
+View the live application here! https://nlorio.github.io/BuildABeat/
 
 All pre processing functions are carried out when the web page is instantiated so it may take several seconds before loading is complete and the app is ready to use. Enjoy!
