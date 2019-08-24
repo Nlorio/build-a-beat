@@ -1,4 +1,4 @@
-# Build A Beat: https://nlorio.github.io/160_final/
+# Build A Beat: https://nlorio.github.io/BuildABeat/
 
 I used reactJS for development. The microphone interaction and the ability to record and playback audio was the first feature to be designed and incorporated. This was done without any large libraries or packages.
 
