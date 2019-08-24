@@ -2,7 +2,7 @@
   "name": "music-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nlorio.github.io/160_final/",
+  "homepage": "https://nlorio.github.io/BuildABeat/",
   "dependencies": {
     "audio-processing": "^1.0.9",
     "ffmpeg": "0.0.4",

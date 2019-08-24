@@ -66,7 +66,7 @@ class App extends React.Component {
       this.setState({all_arg : temp} );
       this.setState( {ready : true} );
     };
-    setTimeout(build_arguments, 8000);
+    setTimeout(build_arguments, 12000);
 
     setTimeout(process_bass, 1000);
     setTimeout(process_snare, 2000);
@@ -117,7 +117,7 @@ function preProcessingGivenType(type) {
       p.draw = function () {
         // debugger;
         spectrums_with_amp.push([fft.analyze(), amp.getLevel()]);
-        if (count === 200) {
+        if (count === 400) {
           // Find max amplitude and save the spectrum that occured at that point.
           let max = [0, 0];
           let i;
@@ -220,8 +220,8 @@ class Sketch extends React.Component {
         // console.log(spectrum);
         p.beginShape();
         for (let i = 0; i < spectrum.length; i++) {
-          p.vertex(
-            p.map(i, 0, 1024, 0, p.width),
+          p.vertex(i,
+            // p.map(i, 0, 1024, 0, p.width),
             p.map(spectrum[i], 0, 255, p.height, 0)
           );
         }
