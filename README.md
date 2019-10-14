@@ -1,7 +1,5 @@
 # Build A Beat: https://nlorio.github.io/BuildABeat/
 
-Read the Medium Article here: https://medium.com/@madelynliu/cs-160-final-project-build-a-beat-d2c34e096f1e
-
 I used reactJS for development. The microphone interaction and the ability to record and playback audio was the first feature to be designed and incorporated. This was done without any large libraries or packages.
 
 After this, my focus shifted to audio detection. For feasibility, given the time constraints, I decided that at minimum our application should be able to detect four noises intrinsic to beatboxing. Once detected the application should record and playback the user created beat with the respective true sound of the noise (drums). It was during these preliminary attempts that I discovered the p5 Processing Library. P5 contains many useful features for audio processing, namely for frequency spectrum and amplitude analysis.
@@ -25,7 +23,9 @@ I built a pre processing function which takes in a user input sample sound and o
 Finally, I added some touch-ups, interactivity, and buttons to the application. Users may stop/start recording/transforming their beat. Users can play back their newly built beat. Users may clear their created beat to start again. Users may furthermore export their beat for later use in larger audio processing applications such as Logic.
 
 
+Read the Medium Article here: https://medium.com/@madelynliu/cs-160-final-project-build-a-beat-d2c34e096f1e
 Feel free to checkout the github page: https://github.com/Nlorio/BuildABeat.git
 View the live application here! https://nlorio.github.io/BuildABeat/
+Awarded Best Implementation award at Jacob Design Showcase: https://cs160summer2019.com/showcase
 
 All pre processing functions are carried out when the web page is instantiated so it may take several seconds before loading is complete and the app is ready to use. Enjoy!
