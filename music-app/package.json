@@ -15,7 +15,7 @@
     "react-hot-loader": "^4.12.10",
     "react-mic": "^12.4.1",
     "react-p5-wrapper": "^2.0.0",
-    "react-scripts": "3.0.1",
+    "react-scripts": "5.0.1",
     "yarn": "^1.17.3"
   },
   "scripts": {
